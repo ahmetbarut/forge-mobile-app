@@ -2,13 +2,19 @@ import { View, Text, ScrollView } from "react-native";
 import ServerCard from "../components/Cards/ServerCard";
 import Table from "../components/Table";
 import useApi from "../useApi";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HomeScreen() {
-    const [servers, setServers] = React.useState([]);
-    useApi({ method: "GET", uri: "servers" }).then((response) => {
-        setServers(response.servers);
-    });
+    const [servers, setServers] = useState([]);
+    const fetchData = () => {
+        useApi({ method: "GET", uri: "servers" }).then((response) => {
+            setServers(response.servers);
+        });
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, []);
     
   return (
     <View style={{ padding: 10 }}>
@@ -16,6 +22,7 @@ export default function HomeScreen() {
         {servers && servers.map((item) => (
           <ServerCard
             key={item.id}
+            serverId={item.id}
             features={[item.php_version, item.database_type]}
             ipAddress={item.ip_address}
             isConnected={item.is_ready}
